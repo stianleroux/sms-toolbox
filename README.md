@@ -53,6 +53,23 @@ API_KEY=your-secret-key
 
 If `API_KEY` is empty, API is open.
 
+### Hardcoded security key (enabled)
+
+This project now enforces an API key even if no env var is set.
+
+- Built-in fallback key: `sms-toolbox-2026-secret`
+- Override by setting `API_KEY` in `worker/.dev.vars` or Worker vars in Cloudflare dashboard.
+
+Every request to:
+
+- `POST /api/sms/enqueue`
+- `GET /api/sms/poll`
+- `POST /api/sms/ack`
+
+must include header:
+
+`x-api-key: <your-key>`
+
 ### Local dev
 
 ```bash
@@ -119,6 +136,41 @@ curl -X POST "https://sms-worker.<your-subdomain>.workers.dev/api/sms/enqueue" \
     "text": "hello from cloudflare"
   }'
 ```
+
+## 5) HTTP File For Quick Testing
+
+Use `sms-toolbox.http` at repo root with the VS Code REST Client extension.
+
+- Base URL is preset to `https://sms-toolbox.cyborgc.workers.dev`.
+- API key is preset to the hardcoded fallback key.
+- Includes requests for health, enqueue, poll, and ack.
+
+## 6) React Native APK Build
+
+### Fast cloud build with EAS (recommended)
+
+```bash
+cd mobile-app
+npm install -g eas-cli
+eas login
+eas build:configure
+eas build -p android --profile preview
+```
+
+When complete, download the APK from the EAS build link.
+
+### Local APK build (Android Studio)
+
+```bash
+cd mobile-app
+npx expo prebuild -p android
+cd android
+./gradlew assembleRelease
+```
+
+Output APK path:
+
+- `mobile-app/android/app/build/outputs/apk/release/app-release.apk`
 
 ## Notes
 

@@ -1,0 +1,45 @@
+@baseUrl = https://sms-toolbox.cyborgc.workers.dev
+@apiKey = sms-toolbox-2026-secret
+@deviceId = android-phone-1
+@to = +15551234567
+
+### Health
+GET {{baseUrl}}/health
+
+### Enqueue SMS
+POST {{baseUrl}}/api/sms/enqueue
+content-type: application/json
+x-api-key: {{apiKey}}
+
+{
+  "deviceId": "{{deviceId}}",
+  "to": "{{to}}",
+  "text": "test from HTTP file"
+}
+
+### Poll queue for this device
+GET {{baseUrl}}/api/sms/poll?deviceId={{deviceId}}
+x-api-key: {{apiKey}}
+
+### Ack success (replace id with message id from poll)
+POST {{baseUrl}}/api/sms/ack
+content-type: application/json
+x-api-key: {{apiKey}}
+
+{
+  "deviceId": "{{deviceId}}",
+  "id": "replace-message-id",
+  "status": "sent"
+}
+
+### Ack failed (replace id)
+POST {{baseUrl}}/api/sms/ack
+content-type: application/json
+x-api-key: {{apiKey}}
+
+{
+  "deviceId": "{{deviceId}}",
+  "id": "replace-message-id",
+  "status": "failed",
+  "error": "send failed"
+}
