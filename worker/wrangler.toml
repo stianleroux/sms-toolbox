@@ -1,0 +1,20 @@
+name = "sms-worker"
+main = "src/index.ts"
+compatibility_date = "2026-05-15"
+
+[[kv_namespaces]]
+binding = "SMS_KV"
+id = "37d3684f30594423825c8c61ea45900b"
+
+[[queues.producers]]
+binding = "SMS_QUEUE"
+queue = "sms-outbound"
+
+[[queues.consumers]]
+queue = "sms-outbound"
+max_batch_size = 10
+max_batch_timeout = 5
+
+[vars]
+# Optional: if set, clients must send x-api-key with this value
+API_KEY = ""
