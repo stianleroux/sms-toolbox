@@ -70,6 +70,12 @@ must include header:
 
 `x-api-key: <your-key>`
 
+Mobile URL option is also supported for polling:
+
+- `GET /api/sms/poll?deviceId=android-phone-1&key=your-secret-key`
+
+This helps when you want a single URL string for mobile configuration.
+
 ### Local dev
 
 ```bash

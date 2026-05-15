@@ -48,7 +48,10 @@ async function readJson<T>(request: Request): Promise<T | null> {
 function requireApiKey(request: Request, env: Env): boolean {
 	// Uses env API_KEY when configured; otherwise falls back to a built-in key.
 	const expectedApiKey = env.API_KEY?.trim() || HARD_CODED_API_KEY;
-	return request.headers.get("x-api-key") === expectedApiKey;
+	const url = new URL(request.url);
+	const headerApiKey = request.headers.get("x-api-key")?.trim() || "";
+	const queryApiKey = url.searchParams.get("key")?.trim() || "";
+	return headerApiKey === expectedApiKey || queryApiKey === expectedApiKey;
 }
 
 function validatePhone(value: string): boolean {

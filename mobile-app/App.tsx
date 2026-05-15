@@ -21,6 +21,18 @@ export default function App() {
 
 	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const canPoll = useMemo(() => !!apiBaseUrl.trim() && !!deviceId.trim(), [apiBaseUrl, deviceId]);
+	const securePollUrl = useMemo(() => {
+		const base = apiBaseUrl.trim();
+		const dev = encodeURIComponent(deviceId.trim());
+		const key = encodeURIComponent(apiKey.trim());
+		if (!base || !dev) {
+			return "";
+		}
+		if (!key) {
+			return `${base}/api/sms/poll?deviceId=${dev}`;
+		}
+		return `${base}/api/sms/poll?deviceId=${dev}&key=${key}`;
+	}, [apiBaseUrl, deviceId, apiKey]);
 
 	useEffect(() => {
 		return () => {
@@ -77,11 +89,7 @@ export default function App() {
 		setWorking(true);
 		try {
 			const headers: Record<string, string> = {};
-			if (apiKey.trim()) {
-				headers["x-api-key"] = apiKey.trim();
-			}
-
-			const pollUrl = `${apiBaseUrl.trim()}/api/sms/poll?deviceId=${encodeURIComponent(deviceId.trim())}`;
+			const pollUrl = securePollUrl;
 			const response = await fetch(pollUrl, { headers });
 			if (!response.ok) {
 				setLastEvent(`Poll failed: HTTP ${response.status}`);
@@ -160,6 +168,9 @@ export default function App() {
 
 				<Text style={styles.label}>Poll Interval (ms)</Text>
 				<TextInput value={pollIntervalMs} onChangeText={setPollIntervalMs} keyboardType="number-pad" style={styles.input} placeholder="5000" />
+
+				<Text style={styles.label}>Mobile Poll URL With Secret</Text>
+				<TextInput value={securePollUrl} editable={false} selectTextOnFocus style={styles.input} />
 
 				<View style={styles.row}>
 					<Pressable style={[styles.button, styles.startButton, (!canPoll || polling) && styles.buttonDisabled]} onPress={startPolling} disabled={!canPoll || polling}>
